@@ -16,6 +16,7 @@ services:
     restart: always
     depends_on:
       - php
+    user: "${VOLUME_USER_ID:-www-data}:www-data"
     networks:
       sfdemo:
         aliases:
@@ -44,6 +45,7 @@ services:
       - ${COMPOSER_HOME:-/tmp/composer}:/home/www-data/.composer # Share composer cache
     depends_on:
       - db
+    user: "${VOLUME_USER_ID:-www-data}:www-data"
     networks:
       - sfdemo
 

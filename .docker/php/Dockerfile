@@ -22,8 +22,6 @@ COPY php-fpm-pool.conf /usr/local/etc/php/php-fpm.conf
 RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
 	mv composer.phar /usr/local/bin/composer
 
-RUN usermod -u 1000 www-data
-
 # Purge
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get purge --auto-remove -y g++ \
