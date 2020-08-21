@@ -16,7 +16,6 @@ services:
     restart: always
     depends_on:
       - php
-    user: "${VOLUME_USER_ID:-www-data}:www-data"
     networks:
       sfdemo:
         aliases:
@@ -40,6 +39,12 @@ services:
   php:
     build: .docker/php
     restart: always
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - ./project:/var/www
       - ${COMPOSER_HOME:-/tmp/composer}:/home/www-data/.composer # Share composer cache

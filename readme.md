@@ -11,7 +11,7 @@ A Docker image based on Ubuntu, serving PHP 5 or 7 running as Apache Module. Use
 ## Installation
 Before use the docker version, check that ports 80/8080/443 are available. If an Apache / Nginx local server, another docker container are active, they can block access to these ports.
 
-```bash
+```shell script
 make install
 ```
 
@@ -29,6 +29,11 @@ make install
 * php-opcache
 * php-zip
 * composer (php package manager)
+
+For test Nginx/php container, you can install Symfony Demo
+```shell script
+make install-demo
+```
 
 
 ## Usage

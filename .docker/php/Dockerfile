@@ -1,7 +1,7 @@
 FROM php:7.4-fpm
 
 # Some libs
-RUN apt-get update && apt-get install -y --no-install-recommends vim curl locales apt-utils
+RUN apt-get update && apt-get install -y --no-install-recommends vim curl locales apt-utils unzip
 
 # https://github.com/mlocati/docker-php-extension-installer
 ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/

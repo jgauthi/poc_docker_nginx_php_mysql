@@ -36,10 +36,11 @@ install: docker-compose.override.yml build up composer-install perm  ## Create a
 install-demo:
 	@$(EXEC_ROOT) chmod 775 /var/www
 	@$(EXEC_ROOT) chown www-data:www-data /var/www
+	@rm -rf project/* project/.env
 	$(call composer,create-project symfony/symfony-demo demo)
-	@$(EXEC_ROOT) bash -c "mv demo/* . && rm -rf demo/"
-	# todo: change doctrine config (use mysql instead sqlite)
-	make clear-cache
+	@cp .docker/php/symfony-demo.env project/.env
+	@$(EXEC_ROOT) bash -c "mv demo/* . && rm -rf demo/ data/"
+	@make restart perm db-create-migration db-install db-fixtures clear-cache
 
 status:  ## Docker container status
 	@$(DOCKER_COMPOSE) ps
@@ -90,6 +91,9 @@ server-dump:  ## [Dev only] Display dump() values with tail (ctrl+C to stop)
 ##---------------------------------------------------------------------------
 db-diff:  ## Generate a migration by comparing your current database to your mapping information
 	@$(EXEC) $(CONSOLE) doctrine:migration:diff
+
+db-create-migration: ## Create migration
+	@$(EXEC) $(CONSOLE) make:migration
 
 db-migrate:  ## Migrate database schema to the latest available version
 	@$(EXEC) $(CONSOLE) doctrine:migration:migrate -n --env=$(ENV)
@@ -166,8 +170,8 @@ up-ci:
 	@$(DOCKER_COMPOSE) up -d --remove-orphans
 
 perm: ## Set folder permissions
-	@$(EXEC_ROOT) chmod -R 775 var
-	@$(EXEC_ROOT) chgrp -R www-data var
+	@$(EXEC_ROOT) chmod -R 775 var migrations
+	@$(EXEC_ROOT) chgrp -R www-data var migrations
 	@$(EXEC_ROOT) bash -c "chmod +x bin/* vendor/bin/*"
 
 #docker-compose.override.yml:
