@@ -4,8 +4,10 @@ services:
     image: nginx
     labels:
       traefik.enable: true
-      traefik.http.port: 80
-      traefik.http.frontend.rule: "Host: demo.localhost.tv"
+      traefik.docker.network: sfdemo
+      traefik.http.services.www.loadbalancer.server.port: 80
+      traefik.http.routers.www.rule: "Host(`demo.localhost.tv`)"
+      traefik.http.routers.www.entrypoints: web
     ports:
       - 80
       - 443

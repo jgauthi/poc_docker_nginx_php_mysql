@@ -16,8 +16,9 @@ services:
     image: phpmyadmin/phpmyadmin
     labels:
       traefik.enable: true
-      traefik.http.port: 80
-      traefik.http.frontend.rule: "Host: pma.localhost.tv"
+      traefik.http.services.pma.loadbalancer.server.port: 80
+      traefik.http.routers.pma.rule: "Host(`pma.localhost.tv`)"
+      traefik.http.routers.pma.entrypoints: web
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
@@ -41,9 +42,8 @@ services:
     image: djfarrelly/maildev
     labels:
       traefik.enable: true
-      traefik.http.port: 80
-      traefik.http.frontend.rule: "Host: maildev.localhost.tv"
-      traefik.http.frontend.frontend.passHostHeader: true
+      traefik.http.services.maildev.loadbalancer.server.port: 80
+      traefik.http.routers.maildev.rule: "Host(`maildev.localhost.tv`)"
     ports:
       - 80
       - 25
@@ -53,14 +53,19 @@ services:
           - maildev.localhost.tv
 
   traefik:
-    image: traefik:v1.7
-    command: -c /dev/null --api --docker --docker.domain=.localhost.tv --logLevel=DEBUG
+    image: traefik:v2.3
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
       - 80:80
       - 443:443
       - 8080:8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - sfdemo
 
