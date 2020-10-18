@@ -60,6 +60,10 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web-secure.address=:443"
+      - "--certificatesresolvers.le.acme.email=my@email.com"
+      - "--certificatesresolvers.le.acme.storage=/acme.json"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
     ports:
       - 80:80
       - 443:443
