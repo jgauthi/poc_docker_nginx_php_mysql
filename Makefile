@@ -11,7 +11,6 @@ EXEC_ROOT?=$(DOCKER_COMPOSE) exec -u root php
 CONSOLE=bin/console
 PHPCSFIXER?=$(EXEC) php -d memory_limit=1024m vendor/bin/php-cs-fixer
 DOCKER_COMPOSE_OVERRIDE ?= dev
-ENV ?= dev
 
 help:
 	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)|(^##)' $(firstword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
@@ -31,7 +30,7 @@ stop:  ## Stop docker containers
 
 restart: stop up-ci  ## Restart docker containers
 
-install: docker-compose.override.yml build up composer-install perm  ## Create and start docker containers
+install: docker-compose.override.yml build up ## Create and start docker containers
 
 install-demo:
 	@$(EXEC_ROOT) chmod 775 /var/www
@@ -40,19 +39,19 @@ install-demo:
 	$(call composer,create-project symfony/symfony-demo demo)
 	@cp .docker/php/symfony-demo.env project/.env
 	@$(EXEC_ROOT) bash -c "mv demo/* . && rm -rf demo/ data/"
-	@make restart perm db-create-migration db-install db-fixtures clear-cache
+	@make restart perm db-create-migration db-install clear-cache
 
 status:  ## Docker container status
 	@$(DOCKER_COMPOSE) ps
 
-uninstall: stop clear  ## Remove docker containers
+uninstall: clear stop  ## Remove docker containers
 	@$(DOCKER_COMPOSE) rm -vf
 
 reset: uninstall install  ## Remove and re-create docker containers
 
 clear-cache: perm  ## Clear + Prepare Cache (alias: c:c), you can specify the env: ENV=prod
-	@$(EXEC) $(CONSOLE) cache:clear --no-warmup --env=$(ENV)
-	@$(EXEC) $(CONSOLE) cache:warmup --env=$(ENV)
+	@$(EXEC) $(CONSOLE) cache:clear --no-warmup --env=$(APP_ENV)
+	@$(EXEC) $(CONSOLE) cache:warmup --env=$(APP_ENV)
 
 c\:c: clear-cache
 
@@ -96,20 +95,22 @@ db-create-migration: ## Create migration
 	@$(EXEC) $(CONSOLE) make:migration
 
 db-migrate:  ## Migrate database schema to the latest available version
-	@$(EXEC) $(CONSOLE) doctrine:migration:migrate -n --env=$(ENV)
+	@$(EXEC) $(CONSOLE) doctrine:migration:migrate -n --env=$(APP_ENV)
 
 db-rollback:  ## Rollback the latest executed migration
-	@$(EXEC) $(CONSOLE) doctrine:migration:migrate prev -n --env=$(ENV)
+	@$(EXEC) $(CONSOLE) doctrine:migration:migrate prev -n --env=$(APP_ENV)
 
 db-validate:  ## Check the ORM mapping
 	@$(EXEC) $(CONSOLE) doctrine:schema:validate
 
-db-install:  ## Install database, you can add 'db-fixtures' argument for apply fixtures after install
+db-create-database: ## Create database if not exists
 	@$(EXEC) $(CONSOLE) doctrine:database:create --if-not-exists
-	@$(EXEC) $(CONSOLE) doctrine:migrations:migrate -n --env=$(ENV)
 
 db-fixtures:  ## Apply doctrine fixtures
-	@$(EXEC) $(CONSOLE) doctrine:fixtures:load -n --env=$(ENV)
+	@$(EXEC) $(CONSOLE) doctrine:fixtures:load -n --env=$(APP_ENV)
+
+db-install: db-create-database db-migrate db-fixtures ## Drop and install database with schema + fixtures
+
 
 # ##
 # ## Assets
