@@ -4,9 +4,8 @@ FROM php:7.4-fpm
 RUN apt-get update && apt-get install -y --no-install-recommends vim curl locales apt-utils unzip
 
 # https://github.com/mlocati/docker-php-extension-installer
-ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
-
-RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && install-php-extensions \
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions @composer \
     apcu opcache intl \
     gd imagick \
     pdo_mysql \
@@ -17,10 +16,6 @@ RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && install-php-ext
 # PHP Conf
 COPY php.ini /usr/local/etc/php/php.ini
 COPY php-fpm-pool.conf /usr/local/etc/php/php-fpm.conf
-
-# Install composer
-RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
-	mv composer.phar /usr/local/bin/composer
 
 # Purge
 RUN rm -rf /var/lib/apt/lists/* \

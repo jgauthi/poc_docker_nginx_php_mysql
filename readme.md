@@ -1,5 +1,5 @@
 # Docker Nginx + PHP + Mysql + Dev Tools
-A Docker image based on Ubuntu, serving PHP 5 or 7 running as Apache Module. Useful for Web developers in need for a fixed PHP version. In addition, the `error_reporting` setting in php.ini is configurable per container via environment variable.
+A Docker image based on Ubuntu, serving PHP 7.4 FPM running as Nginx Module. Useful for Web developers in need for a fixed PHP version. In addition, the `error_reporting` setting in php.ini is configurable per container via environment variable.
 
 ## Prerequisite
 
@@ -13,6 +13,9 @@ Before use the docker version, check that ports 80/8080/443 are available. If an
 
 ```shell script
 make install
+
+# If symfony project is present on project folder
+make install composer-install perm
 ```
 
 **Installed packages:**
