@@ -3,3 +3,4 @@ project/
 .env
 !.env.dist
 docker-compose.override.yml
+dump_*.sql

@@ -111,6 +111,13 @@ db-fixtures:  ## Apply doctrine fixtures
 
 db-install: db-create-database db-migrate db-fixtures ## Drop and install database with schema + fixtures
 
+db-dump: ## Dump Database on dump_DBNAME.sql file
+	@$(DOCKER_COMPOSE) exec db mysqldump --host=db --port=$(MYSQL_PORT) --default-character-set=utf8 -u $(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE) > dump_$(MYSQL_DATABASE).sql
+	@ls -l dump_$(MYSQL_DATABASE).sql
+
+db-query: ## Execute query $CMD="mysql query"
+	@$(DOCKER_COMPOSE) exec db mysql --host=db --port=$(MYSQL_PORT) --default-character-set=utf8 -u $(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE) -e "$(CMD)"
+
 
 # ##
 # ## Assets
