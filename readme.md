@@ -50,7 +50,7 @@ If you use dev docker file _(default configuration)_, you have additional tools:
 
 * You can access to mysql on localhost:33060 (for PhpStorm / Mysql Workbench).
 * You can use mysql command line without indicate user/pass:
-    * Standard request: `docker-compose exec db mysql symfony -e "show tables;"`
-    * Dump: `docker-compose exec db mysqldump symfony > export.sql`
+	* Standard request: `docker-compose exec db mysql symfony -e "show tables;"`
+	* Dump: `docker-compose exec db mysqldump symfony > export.sql`
 
 Enjoy
