@@ -5,7 +5,9 @@ ifneq ("$(wildcard .env)","")
 endif
 
 # Init var
-DOCKER_COMPOSE?=docker-compose
+user := $(shell id -u)
+group := $(shell id www-data -g)
+DOCKER_COMPOSE := USER_ID=$(user) GROUP_ID=$(group) docker-compose
 EXEC?=$(DOCKER_COMPOSE) exec php
 EXEC_ROOT?=$(DOCKER_COMPOSE) exec -u root php
 CONSOLE=bin/console
@@ -40,6 +42,12 @@ install-demo:
 	@cp .docker/php/symfony-demo.env project/.env
 	@$(EXEC_ROOT) bash -c "mv demo/* . && rm -rf demo/ data/"
 	@make restart perm db-create-migration db-install clear-cache
+
+install-prod:
+	APP_ENV=prod APP_DEBUG=0 $(call composer,install --no-dev --optimize-autoloader)
+	APP_ENV=prod make clear-cache
+	APP_ENV=prod APP_DEBUG=0 @$(EXEC) $(CONSOLE) cache:clear
+	@$(EXEC) $(CONSOLE) cache:pool:clear cache.global_clearer
 
 status:  ## Docker container status
 	@$(DOCKER_COMPOSE) ps
