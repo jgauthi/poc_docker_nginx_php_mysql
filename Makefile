@@ -7,9 +7,11 @@ endif
 # Init var
 user := $(shell id -u)
 group := $(shell id www-data -g)
+PROJECT_NAME=demo
+PROJECT_DIR=/var/www/$(PROJECT_NAME)
 DOCKER_COMPOSE := USER_ID=$(user) GROUP_ID=$(group) docker-compose
-EXEC?=$(DOCKER_COMPOSE) exec php
-EXEC_ROOT?=$(DOCKER_COMPOSE) exec -u root php
+EXEC?=$(DOCKER_COMPOSE) exec --workdir $(PROJECT_DIR) php
+EXEC_ROOT?=$(DOCKER_COMPOSE) exec --workdir $(PROJECT_DIR) -u root php
 CONSOLE=bin/console
 PHPCSFIXER?=$(EXEC) php -d memory_limit=1024m vendor/bin/php-cs-fixer
 DOCKER_COMPOSE_OVERRIDE ?= dev
@@ -30,17 +32,21 @@ up: docker-compose.override.yml up-ci  ## Start project with docker-compose + De
 stop:  ## Stop docker containers
 	@$(DOCKER_COMPOSE) stop
 
+refresh: ## Remove and re-create docker containers (WITHOUT delete all data)
+	@$(DOCKER_COMPOSE) down
+	@make up-ci
+
 restart: stop up-ci  ## Restart docker containers
 
 install: docker-compose.override.yml build up ## Create and start docker containers
 
 install-demo:
-	@$(EXEC_ROOT) chmod 775 /var/www
-	@$(EXEC_ROOT) chown www-data:www-data /var/www
+	@$(EXEC_ROOT) chmod -R 775 /var/www
+	@$(EXEC_ROOT) chown -R www-data:www-data /var/www
 	@rm -rf project/* project/.env
-	$(call composer,create-project symfony/symfony-demo demo)
+	$(call composer,create-project symfony/symfony-demo install_project,/var/www)
 	@cp .docker/php/symfony-demo.env project/.env
-	@$(EXEC_ROOT) bash -c "mv demo/* . && rm -rf demo/ data/"
+	@$(EXEC_ROOT) bash -c "cd /var/www && mv install_project/* $(PROJECT_NAME)/ && rm -rf install_project/ data/"
 	@make restart perm db-create-migration db-install clear-cache
 
 install-prod:
@@ -77,13 +83,13 @@ clean: clear  ## Clear and remove dependencies
 ## Developpment
 ##---------------------------------------------------------------------------
 define composer
-	@$(EXEC) php -d memory_limit=1500M /usr/local/bin/composer $(1) -n
+	@$(EXEC) php -d memory_limit=1500M /usr/local/bin/composer $(1) -n --working-dir=$(or $(2),$(PROJECT_DIR))
 endef
 
 composer-install:  ## Composer installation
 	$(call composer,install)
 
-composer:  ## Composer command. You can specified package, example: `make composer CMD="update twig/twig"`
+composer:  ## Composer command. You can specified package, example: `make composer CMD="update twig/twig"`, you can set another project folder with the argument PROJECT_NAME="folder name in /var/www --OR-- /folder/full/path/location"
 	$(call composer,$(CMD))
 
 shell:  ## Run app container in interactive mode

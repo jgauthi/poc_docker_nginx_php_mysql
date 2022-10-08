@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends vim curl locale
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions @composer \
     apcu opcache intl \
-    gd imagick \
+    gd \
     pdo_mysql \
     mbstring \
     sodium \
