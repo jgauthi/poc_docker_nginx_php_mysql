@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:8.1-fpm
 
 # Some libs
 RUN apt-get update && apt-get install -y --no-install-recommends vim curl locales apt-utils unzip
@@ -10,6 +10,7 @@ RUN install-php-extensions @composer \
     gd imagick \
     pdo_mysql \
     mbstring \
+    sodium \
     xdebug \
     zip
 
