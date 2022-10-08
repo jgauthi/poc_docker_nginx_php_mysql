@@ -49,7 +49,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - ./project:/var/www/demo
-      - ${COMPOSER_HOME:-/tmp/composer}:/home/www-data/.composer # Share composer cache
+      - ~/.cache/composer:/.composer # Share composer cache
     depends_on:
       - db
     user: "${VOLUME_USER_ID:-www-data}:www-data"
