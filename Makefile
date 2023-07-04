@@ -8,11 +8,12 @@ endif
 user := $(shell id -u)
 group := $(shell id www-data -g)
 PROJECT_NAME=demo
-PROJECT_DIR=/var/www/$(PROJECT_NAME)
+PROJECT_DIR=/var/www/project/$(PROJECT_NAME)
 DOCKER_COMPOSE := USER_ID=$(user) GROUP_ID=$(group) docker-compose
 EXEC?=$(DOCKER_COMPOSE) exec --workdir $(PROJECT_DIR) php
+EXEC_SF?=$(DOCKER_COMPOSE) exec -u www-data php
 EXEC_ROOT?=$(DOCKER_COMPOSE) exec --workdir $(PROJECT_DIR) -u root php
-CONSOLE=bin/console
+CONSOLE=$(EXEC_SF) symfony console
 PHPCSFIXER?=$(EXEC) php -d memory_limit=1024m vendor/bin/php-cs-fixer
 DOCKER_COMPOSE_OVERRIDE ?= dev
 
@@ -25,7 +26,7 @@ help:
 ##---------------------------------------------------------------------------
 
 sf: ## Symfony Command, example: `sf CMD="debug:router"`
-	@$(EXEC) $(CONSOLE) $(CMD)
+	@$(CONSOLE) $(CMD)
 
 up: docker-compose.override.yml up-ci  ## Start project with docker-compose + Dev env
 
@@ -44,16 +45,16 @@ install-demo:
 	@$(EXEC_ROOT) chmod -R 775 /var/www
 	@$(EXEC_ROOT) chown -R www-data:www-data /var/www
 	@rm -rf project/* project/.env
-	$(call composer,create-project symfony/symfony-demo install_project,/var/www)
+	$(call composer,create-project symfony/symfony-demo install_project,/var/www/project)
 	@cp .docker/php/symfony-demo.env project/.env
-	@$(EXEC_ROOT) bash -c "cd /var/www && mv install_project/* $(PROJECT_NAME)/ && rm -rf install_project/ data/"
+	@$(EXEC_ROOT) bash -c "cd /var/www/project && mv install_project/* $(PROJECT_NAME)/ && rm -rf install_project/ data/"
 	@make restart perm db-create-migration db-install clear-cache
 
 install-prod:
 	APP_ENV=prod APP_DEBUG=0 $(call composer,install --no-dev --optimize-autoloader)
 	APP_ENV=prod make clear-cache
-	APP_ENV=prod APP_DEBUG=0 @$(EXEC) $(CONSOLE) cache:clear
-	@$(EXEC) $(CONSOLE) cache:pool:clear cache.global_clearer
+	APP_ENV=prod APP_DEBUG=0 @$(CONSOLE) cache:clear
+	@$(CONSOLE) cache:pool:clear cache.global_clearer
 
 status:  ## Docker container status
 	@$(DOCKER_COMPOSE) ps
@@ -64,8 +65,8 @@ uninstall: clear stop  ## Remove docker containers
 reset: uninstall install  ## Remove and re-create docker containers
 
 clear-cache: perm  ## Clear + Prepare Cache (alias: c:c), you can specify the env: ENV=prod
-	@$(EXEC) $(CONSOLE) cache:clear --no-warmup --env=$(APP_ENV)
-	@$(EXEC) $(CONSOLE) cache:warmup --env=$(APP_ENV)
+	@$(CONSOLE) cache:clear --no-warmup --env=$(APP_ENV)
+	@$(CONSOLE) cache:warmup --env=$(APP_ENV)
 
 c\:c: clear-cache
 
@@ -96,32 +97,32 @@ shell:  ## Run app container in interactive mode
 	@$(EXEC) /bin/bash
 
 server-dump:  ## [Dev only] Display dump() values with tail (ctrl+C to stop)
-	@$(EXEC) $(CONSOLE) server:dump
+	@$(CONSOLE) server:dump
 
 
 ##
 ## Doctrine Command (Database)
 ##---------------------------------------------------------------------------
 db-diff:  ## Generate a migration by comparing your current database to your mapping information
-	@$(EXEC) $(CONSOLE) doctrine:migration:diff
+	@$(CONSOLE) doctrine:migration:diff
 
 db-create-migration: ## Create migration
-	@$(EXEC) $(CONSOLE) make:migration
+	@$(CONSOLE) make:migration
 
 db-migrate:  ## Migrate database schema to the latest available version
-	@$(EXEC) $(CONSOLE) doctrine:migration:migrate -n --env=$(APP_ENV)
+	@$(CONSOLE) doctrine:migration:migrate -n --env=$(APP_ENV)
 
 db-rollback:  ## Rollback the latest executed migration
-	@$(EXEC) $(CONSOLE) doctrine:migration:migrate prev -n --env=$(APP_ENV)
+	@$(CONSOLE) doctrine:migration:migrate prev -n --env=$(APP_ENV)
 
 db-validate:  ## Check the ORM mapping
-	@$(EXEC) $(CONSOLE) doctrine:schema:validate
+	@$(CONSOLE) doctrine:schema:validate
 
 db-create-database: ## Create database if not exists
-	@$(EXEC) $(CONSOLE) doctrine:database:create --if-not-exists
+	@$(CONSOLE) doctrine:database:create --if-not-exists
 
 db-fixtures:  ## Apply doctrine fixtures
-	@$(EXEC) $(CONSOLE) doctrine:fixtures:load -n --env=$(APP_ENV)
+	@$(CONSOLE) doctrine:fixtures:load -n --env=$(APP_ENV)
 
 db-install: db-create-database db-migrate db-fixtures ## Drop and install database with schema + fixtures
 
@@ -158,13 +159,13 @@ lint: lint-symfony php-cs  ## Run lint on Twig, YAML, PHP and Javascript files
 lint-symfony: lint-yaml lint-twig lint-xliff  ## Lint Symfony (Twig and YAML) files
 
 lint-yaml:   ## Lint YAML files
-	@$(EXEC) $(CONSOLE) lint:yaml config
+	@$(CONSOLE) lint:yaml config
 
 lint-twig:   ## Lint Twig files
-	@$(EXEC) $(CONSOLE) lint:twig templates
+	@$(CONSOLE) lint:twig templates
 
 lint-xliff:   ## Lint Translation files
-	@$(EXEC) $(CONSOLE) lint:xliff translations
+	@$(CONSOLE) lint:xliff translations
 
 php-cs: vendor  ## Lint PHP code
 	@$(PHPCSFIXER) fix --diff --dry-run --no-interaction -v
@@ -176,7 +177,7 @@ security-check: vendor  ## Check for vulnerable dependencies
 	@$(EXEC) vendor/bin/security-checker security:check
 
 test-schema: vendor ## Test the doctrine Schema
-	@$(EXEC) $(CONSOLE) doctrine:schema:validate --skip-sync -vvv --no-interaction
+	@$(CONSOLE) doctrine:schema:validate --skip-sync -vvv --no-interaction
 
 test-all: lint test-schema security-check tests  ## Lint all, check vulnerable dependencies, run PHP tests
 

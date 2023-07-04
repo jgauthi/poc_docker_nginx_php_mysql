@@ -1,4 +1,5 @@
 FROM mysql:8
+MAINTAINER J.GAUTHI <github.com/jgauthi>
 
 ARG MYSQL_USER
 ARG MYSQL_PASSWORD

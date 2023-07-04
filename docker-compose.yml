@@ -12,7 +12,7 @@ services:
       - 80
       - 443
     volumes:
-      - ./project:/var/www/demo
+      - ./project:/var/www/project/demo
       - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./.docker/nginx/sites:/etc/nginx/sites-enabled
     restart: unless-stopped
@@ -28,10 +28,10 @@ services:
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
       TZ: ${TIMEZONE:-Europe/Paris}
     ports:
       - 3306
@@ -42,13 +42,13 @@ services:
     build: .docker/php
     restart: unless-stopped
     environment:
-      MYSQL_HOST: db
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_HOST: ${DB_HOST}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_PORT: ${DB_PORT}
+      MYSQL_DATABASE: ${DB_NAME}
     volumes:
-      - ./project:/var/www/demo
+      - ./project:/var/www/project/demo
       - ~/.cache/composer:/.composer # Share composer cache
     depends_on:
       - db
