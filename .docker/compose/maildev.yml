@@ -1,0 +1,15 @@
+version: '3.6'
+services:
+  maildev:
+    image: maildev/maildev
+    labels:
+      traefik.enable: true
+      traefik.http.services.maildev.loadbalancer.server.port: 1080
+      traefik.http.routers.maildev.rule: "Host(`maildev.localhost.tv`)"
+    ports:
+      - 1080
+      - 1025
+    networks:
+      sfdemo:
+        aliases:
+          - maildev.localhost.tv

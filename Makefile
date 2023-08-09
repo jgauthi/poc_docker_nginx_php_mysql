@@ -190,7 +190,7 @@ build:
 	@$(DOCKER_COMPOSE) build --force-rm
 
 up-ci:
-	@$(DOCKER_COMPOSE) up -d --remove-orphans
+	@$(DOCKER_COMPOSE) up -d --remove-orphans --force-recreate
 
 perm: ## Set folder permissions
 	@$(EXEC_ROOT) chmod -R 775 var migrations

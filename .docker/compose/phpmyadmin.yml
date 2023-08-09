@@ -1,0 +1,27 @@
+version: '3.6'
+services:
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    labels:
+      traefik.enable: true
+      traefik.http.services.pma.loadbalancer.server.port: 80
+      traefik.http.routers.pma.rule: "Host(`pma.localhost.tv`)"
+      traefik.http.routers.pma.entrypoints: web
+    environment:
+      PMA_HOST: ${DB_HOST}
+      PMA_PORT: ${DB_PORT}
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASS}
+    ports:
+      - 80
+    volumes:
+      - ./../phpmyadmin/config.inc.php:/etc/phpmyadmin/config.user.inc.php
+      - ./../phpmyadmin/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    depends_on:
+      - db
+    links:
+      - db
+    networks:
+      sfdemo:
+        aliases:
+          - pma.localhost.tv
