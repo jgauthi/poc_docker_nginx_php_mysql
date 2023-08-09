@@ -65,8 +65,8 @@ uninstall: clear stop  ## Remove docker containers
 reset: uninstall install  ## Remove and re-create docker containers
 
 clear-cache: perm  ## Clear + Prepare Cache (alias: c:c), you can specify the env: ENV=prod
-	@$(CONSOLE) cache:clear --no-warmup --env=$(APP_ENV)
-	@$(CONSOLE) cache:warmup --env=$(APP_ENV)
+	@$(CONSOLE) cache:clear --no-warmup
+	@$(CONSOLE) cache:warmup
 
 c\:c: clear-cache
 
@@ -110,10 +110,10 @@ db-create-migration: ## Create migration
 	@$(CONSOLE) make:migration
 
 db-migrate:  ## Migrate database schema to the latest available version
-	@$(CONSOLE) doctrine:migration:migrate -n --env=$(APP_ENV)
+	@$(CONSOLE) doctrine:migration:migrate -n
 
 db-rollback:  ## Rollback the latest executed migration
-	@$(CONSOLE) doctrine:migration:migrate prev -n --env=$(APP_ENV)
+	@$(CONSOLE) doctrine:migration:migrate prev -n
 
 db-validate:  ## Check the ORM mapping
 	@$(CONSOLE) doctrine:schema:validate
@@ -122,7 +122,7 @@ db-create-database: ## Create database if not exists
 	@$(CONSOLE) doctrine:database:create --if-not-exists
 
 db-fixtures:  ## Apply doctrine fixtures
-	@$(CONSOLE) doctrine:fixtures:load -n --env=$(APP_ENV)
+	@$(CONSOLE) doctrine:fixtures:load -n
 
 db-install: db-create-database db-migrate db-fixtures ## Drop and install database with schema + fixtures
 
@@ -207,13 +207,18 @@ define echo_text
 	echo -e '\e[1;$(2)m$(1)\e[0m'
 endef
 
-docker-compose.override.yml: docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml
+docker-compose.override.yml:
 ifeq (,$(wildcard .env))
 	@cp .env.dist .env
 endif
-	@test -f docker-compose.override.yml \
-		&& $(call echo_text,/!\ docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml might have been modified - remove docker-compose.override.yml to be up-to-date,31) \
-		|| ( echo "Copy docker-compose.override.yml from docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml"; cp docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml docker-compose.override.yml )
+
+#docker-compose.override.yml: docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml
+#ifeq (,$(wildcard .env))
+#	@cp .env.dist .env
+#endif
+#	@test -f docker-compose.override.yml \
+#		&& $(call echo_text,/!\ docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml might have been modified - remove docker-compose.override.yml to be up-to-date,31) \
+#		|| ( echo "Copy docker-compose.override.yml from docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml"; cp docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml docker-compose.override.yml )
 
 
 #node_modules: yarn.lock

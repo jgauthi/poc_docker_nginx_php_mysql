@@ -12,9 +12,9 @@ services:
       - 80
       - 443
     volumes:
-      - ./project:/var/www/project/demo
-      - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./.docker/nginx/sites:/etc/nginx/sites-enabled
+      - ../../project:/var/www/project/demo
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ../nginx/sites:/etc/nginx/sites-enabled
     restart: unless-stopped
     depends_on:
       - php
@@ -39,7 +39,7 @@ services:
       - sfdemo
 
   php:
-    build: .docker/php
+    build: ../php
     restart: unless-stopped
     environment:
       MYSQL_HOST: ${DB_HOST}
@@ -48,7 +48,7 @@ services:
       MYSQL_PORT: ${DB_PORT}
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
-      - ./project:/var/www/project/demo
+      - ../../project:/var/www/project/demo
       - ~/.cache/composer:/.composer # Share composer cache
     depends_on:
       - db

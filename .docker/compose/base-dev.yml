@@ -2,7 +2,7 @@ version: '3.6'
 services:
   db:
     build:
-      context: .docker/mysql
+      context: ../mysql
       args:
         MYSQL_USER: ${DB_USER}
         MYSQL_PASSWORD: ${DB_PASS}
@@ -27,8 +27,8 @@ services:
     ports:
       - 80
     volumes:
-      - ./.docker/phpmyadmin/config.inc.php:/etc/phpmyadmin/config.user.inc.php
-      - ./.docker/phpmyadmin/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+      - ./../phpmyadmin/config.inc.php:/etc/phpmyadmin/config.user.inc.php
+      - ./../phpmyadmin/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     depends_on:
       - db
     links:
