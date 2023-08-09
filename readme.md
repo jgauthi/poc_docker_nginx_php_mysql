@@ -12,6 +12,10 @@ A Docker image based on Ubuntu, serving PHP 8.1 FPM running as Nginx Module. Use
 Before use the docker version, check that ports 80/8080/443 are available. If an Apache / Nginx local server, another docker container are active, they can block access to these ports.
 
 ```shell script
+# [Optional] Before launch install, you can edit the docker .env
+make conf-env-file
+# edit .env
+
 make install
 
 # If symfony project is present on project folder

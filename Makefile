@@ -28,7 +28,7 @@ help:
 sf: ## Symfony Command, example: `sf CMD="debug:router"`
 	@$(CONSOLE) $(CMD)
 
-up: docker-compose.override.yml up-ci  ## Start project with docker-compose + Dev env
+up: conf-env-file up-ci  ## Start project with docker-compose + Dev env
 
 stop:  ## Stop docker containers
 	@$(DOCKER_COMPOSE) stop
@@ -39,7 +39,7 @@ refresh: ## Remove and re-create docker containers (WITHOUT delete all data)
 
 restart: stop up-ci  ## Restart docker containers
 
-install: docker-compose.override.yml build up ## Create and start docker containers
+install: conf-env-file build up ## Create and start docker containers
 
 install-demo:
 	@$(EXEC_ROOT) chmod -R 775 /var/www
@@ -207,9 +207,9 @@ define echo_text
 	echo -e '\e[1;$(2)m$(1)\e[0m'
 endef
 
-docker-compose.override.yml:
+conf-env-file:
 ifeq (,$(wildcard .env))
-	@cp .env.dist .env
+	@cp .docker/compose/docker.env .env
 endif
 
 #docker-compose.override.yml: docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml
