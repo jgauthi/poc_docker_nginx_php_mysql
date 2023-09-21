@@ -8,7 +8,7 @@ services:
         MYSQL_PASSWORD: ${DB_PASS}
         MYSQL_PORT: ${DB_PORT}
     ports:
-      - 33060:3306 # Reserve port to localhost for database connexion on phpstorm
+      - "33060:3306" # Reserve port to localhost for database connexion on phpstorm
     volumes:
       - mysql-db:/var/lib/mysql
 
@@ -20,12 +20,14 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
     ports:
-      - 80:80
-      - 443:443
-      - 8080:8080
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
     networks:
       - sfdemo
 
