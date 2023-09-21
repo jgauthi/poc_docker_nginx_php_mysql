@@ -1,6 +1,6 @@
 project/
 !project/.gitkeep
 .env
-!.docker/compose/.env.dist
+.docker/compose/custom.yml
 docker-compose.override.yml
 dump_*.sql
