@@ -1,9 +1,9 @@
 # Docker Nginx + PHP + Mysql + Dev Tools
-A Docker image based on Ubuntu, serving PHP 8.1 FPM running as Nginx Module. Useful for Web developers in need for a fixed PHP version. In addition, the `error_reporting` setting in php.ini is configurable per container via environment variable.
+A Docker image based on Ubuntu, serving PHP 8.2 FPM running as Nginx Module. Useful for Web developers in need for a fixed PHP version. In addition, the `error_reporting` setting in php.ini is configurable per container via environment variable.
 
 ## Prerequisite
 
-* Docker v18+ / Docker-compose v1.23+ / [Manage Docker as a non-root user](https://docs.docker.com/install/linux/linux-postinstall/)
+* Docker v24+ / Docker-compose v2.21+ / [Manage Docker as a non-root user](https://docs.docker.com/install/linux/linux-postinstall/)
 * Make command: Under linux `sudo apt install build-essential` or for [Windows users](https://stackoverflow.com/questions/32127524/how-to-install-and-use-make-in-windows/54086635)
 * Git
 

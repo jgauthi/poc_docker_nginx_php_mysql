@@ -9,13 +9,12 @@ user := $(shell id -u)
 group := $(shell id www-data -g)
 PROJECT_NAME=demo
 PROJECT_DIR=/var/www/project/$(PROJECT_NAME)
-DOCKER_COMPOSE := USER_ID=$(user) GROUP_ID=$(group) docker-compose
+DOCKER_COMPOSE := USER_ID=$(user) GROUP_ID=$(group) docker compose
 EXEC?=$(DOCKER_COMPOSE) exec --workdir $(PROJECT_DIR) php
 EXEC_SF?=$(DOCKER_COMPOSE) exec -u www-data php
 EXEC_ROOT?=$(DOCKER_COMPOSE) exec --workdir $(PROJECT_DIR) -u root php
 CONSOLE=$(EXEC_SF) symfony console
 PHPCSFIXER?=$(EXEC) php -d memory_limit=1024m vendor/bin/php-cs-fixer
-DOCKER_COMPOSE_OVERRIDE ?= dev
 
 help:
 	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)|(^##)' $(firstword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
@@ -211,14 +210,6 @@ conf-env-file:
 ifeq (,$(wildcard .env))
 	@cp .docker/compose/docker.env .env
 endif
-
-#docker-compose.override.yml: docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml
-#ifeq (,$(wildcard .env))
-#	@cp .env.dist .env
-#endif
-#	@test -f docker-compose.override.yml \
-#		&& $(call echo_text,/!\ docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml might have been modified - remove docker-compose.override.yml to be up-to-date,31) \
-#		|| ( echo "Copy docker-compose.override.yml from docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml"; cp docker-compose.$(DOCKER_COMPOSE_OVERRIDE).yml docker-compose.override.yml )
 
 
 #node_modules: yarn.lock
