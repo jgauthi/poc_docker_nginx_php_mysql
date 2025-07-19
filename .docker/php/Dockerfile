@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 MAINTAINER J.GAUTHI <github.com/jgauthi>
 
 # Some libs
@@ -24,7 +24,8 @@ RUN chown -R www-data:www-data /var/www
 
 # PHP Conf
 COPY php.ini /usr/local/etc/php/php.ini
-COPY php-fpm-pool.conf /usr/local/etc/php/php-fpm.conf
+COPY 98-xdebug.ini $PHP_INI_DIR/conf.d/98-xdebug.ini
+COPY 99-custom-php-conf.ini $PHP_INI_DIR/conf.d/99-custom-php-conf.ini
 
 # Purge
 RUN rm -rf /var/lib/apt/lists/* \

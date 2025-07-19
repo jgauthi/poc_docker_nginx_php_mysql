@@ -17,7 +17,7 @@ services:
       - ../../project:/var/www/project/demo
       - ../nginx/nginx.conf:/etc/nginx/nginx.conf
       - ../nginx/sites:/etc/nginx/sites-enabled
-    restart: unless-stopped
+    restart: ${RESTART_POLICY:-on-failure}
     depends_on:
       - php
     networks:
@@ -28,7 +28,7 @@ services:
   db:
     image: mysql:8
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    restart: unless-stopped
+    restart: ${RESTART_POLICY:-on-failure}
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASS}
       MYSQL_DATABASE: ${DB_NAME}
@@ -42,7 +42,7 @@ services:
 
   php:
     build: ../php
-    restart: unless-stopped
+    restart: ${RESTART_POLICY:-on-failure}
     environment:
       MYSQL_HOST: ${DB_HOST}
       MYSQL_USER: ${DB_USER}
