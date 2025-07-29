@@ -1,5 +1,5 @@
 FROM php:8.4-fpm
-MAINTAINER J.GAUTHI <github.com/jgauthi>
+LABEL maintainer="J.GAUTHI <github.com/jgauthi>"
 
 # Some libs
 RUN apt-get update && apt-get install -y --no-install-recommends vim curl locales apt-utils unzip
