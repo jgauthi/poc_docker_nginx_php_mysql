@@ -4,7 +4,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.pma.loadbalancer.server.port: 80
-      traefik.http.routers.pma.rule: "Host(`pma.localhost.tv`)"
+      traefik.http.routers.pma.rule: "Host(`pma.localhost`)"
       traefik.http.routers.pma.entrypoints: web
     environment:
       PMA_HOST: ${DB_HOST}
@@ -24,4 +24,4 @@ services:
     networks:
       sfdemo:
         aliases:
-          - pma.localhost.tv
+          - pma.localhost

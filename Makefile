@@ -42,7 +42,7 @@ install: conf-env-file build up ## Create and start docker containers
 
 install-demo:
 	@$(EXEC_ROOT) chmod -R 775 /var/www
-	@$(EXEC_ROOT) chown -R www-data:www-data /var/www
+	@$(EXEC_ROOT) chown -R localuser:www-data /var/www
 	@rm -rf project/* project/.env
 	$(call composer,create-project symfony/symfony-demo install_project,/var/www/project)
 	@cp .docker/php/symfony-demo.env project/.env

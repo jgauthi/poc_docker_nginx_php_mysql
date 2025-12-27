@@ -5,10 +5,10 @@ services:
       traefik.enable: true
       traefik.docker.network: sfdemo
       traefik.http.services.www.loadbalancer.server.port: 80
-      traefik.http.routers.www.rule: "Host(`demo.localhost.tv`)"
+      traefik.http.routers.www.rule: "Host(`demo.localhost`)"
       traefik.http.routers.www.entrypoints: web
       traefik.http.routers.www_secure.entrypoints: websecure
-      traefik.http.routers.www_secure.rule: "Host(`demo.localhost.tv`)"
+      traefik.http.routers.www_secure.rule: "Host(`demo.localhost`)"
       traefik.http.routers.www_secure.tls: true
     ports:
       - "80"
@@ -23,7 +23,7 @@ services:
     networks:
       sfdemo:
         aliases:
-          - demo.localhost.tv
+          - demo.localhost
 
   db:
     image: mysql:8

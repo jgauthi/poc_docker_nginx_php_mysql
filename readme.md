@@ -47,9 +47,9 @@ make install-demo
 Launch docker containers: `make up`, or stop with `make stop`, you can get command list with `make help`.
 
 You can connect on url application:
-* [Example Symfony Demo](http://demo.localhost.tv)
-* [phpMyAdmin](http://pma.localhost.tv)
-* [mailDev](http://maildev.localhost.tv)
+* [Example Symfony Demo](http://demo.localhost)
+* [phpMyAdmin](http://pma.localhost)
+* [mailDev](http://maildev.localhost)
 
 
 ## Dev environment

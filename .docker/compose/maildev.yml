@@ -4,7 +4,7 @@ services:
     labels:
       traefik.enable: true
       traefik.http.services.maildev.loadbalancer.server.port: 1080
-      traefik.http.routers.maildev.rule: "Host(`maildev.localhost.tv`)"
+      traefik.http.routers.maildev.rule: "Host(`maildev.localhost`)"
     ports:
       - "1080"
       - "1025"
@@ -12,4 +12,4 @@ services:
     networks:
       sfdemo:
         aliases:
-          - maildev.localhost.tv
+          - maildev.localhost
